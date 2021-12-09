@@ -74,7 +74,7 @@ impl Bingo {
         }
     }
 
-    fn get_filled_sum(&self) -> u32 {
+    fn get_unfilled_sum(&self) -> u32 {
         let mut filled_sum: u32= 0;
         for row in &self.board {
             for x in row {
@@ -109,7 +109,7 @@ pub fn part1() {
     }
 
     println!("Board count {}", boards.len());
-    
+
     let board_count = boards.len();
     'outer: for num in draw {
         for board_index in 0..board_count{
@@ -117,11 +117,60 @@ pub fn part1() {
             b.fill_number(num);
             if b.check_won() {
                 b.print();
-                println!("Score: {}", b.get_filled_sum() * num);
+                println!("Score: {}", b.get_unfilled_sum() * num);
                 break 'outer;
             }
         }
     }
+}
+
+pub fn part2() {
+    let values: Vec<&str> = include_str!("./../../inputs/input4")
+        .lines()
+        .collect();
+
+    let draw: Vec<u32> = values[0].split(",").map(|s| u32::from_str_radix(s, 10).unwrap()).collect();
+
+    let chunks: Vec<&[&str]> = values[2..values.len()]
+        .chunks(6)
+        .map(|f| &f[0..5])
+        .collect();
+
+    let mut boards: Vec<Bingo> = vec![];
+
+    for chunk in chunks {
+        let board = Bingo::from_lines(chunk);
+        boards.push(board);
+    }
+
+    println!("Board count {}", boards.len());
+
+    let mut last_won: usize = 0;
+    let mut last_number_called: u32 = draw[0];
+    let mut unwon_boards: usize = boards.len();
+
+    let board_count = boards.len();
+    'outer: for num in draw {
+        for board_index in 0..board_count {
+            let b = boards.get_mut(board_index).unwrap();
+            if b.check_won() {
+                continue;
+            }
+            last_number_called = num;
+            b.fill_number(num);
+            if b.check_won() {
+                println!("Board {} won", board_index);
+                last_won = board_index;
+                unwon_boards -= 1;
+            }
+
+            if unwon_boards == 0 {
+                break 'outer;
+            }
+        }
+    }
+
+    println!("Losing board score {}", boards.get_mut(last_won).unwrap().get_unfilled_sum() * &last_number_called);
 }
 
 
