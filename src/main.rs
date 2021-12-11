@@ -11,5 +11,9 @@ fn main() {
     //days::day4::part1();
     //days::day4::part2();
     //days::day5::part1();
-    days::day5::part2();
+    //days::day5::part2();
+    //days::day6::part1();
+    //days::day6::part2();
+    //days::day7::part1();
+    days::day7::part2();
 }
